@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Website</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+    font-family: Arial, sans-serif;
+    background-size: cover;
+}
+
+.welcome {
+    background-color: rgba(178, 130, 130, 0.8);
+    padding: 2em;
+}
+
+.welcome h2 {
+    margin: 0;
+    text-align: center;
+}
+.welcome {
+    text-align: center;
+    background-color: #f9f9f9;
+    padding: 2em;
+}
+.welcome-container {
+background-image: url("image/Kerfin7-NEA-2195.jpg");
+background-size: cover;
+background-position: center;
+height: 400px; /* set the height of the container to match the height of the image */
+display: flex;
+justify-content: center;
+align-items: center;
+margin-bottom: 20px;
+font-style: italic;
+color: #ff0033;
+}
+#search-form {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 2em;
+}
+
+#search-form label {
+    margin-right: 1em;
+}
+
+#search-input {
+    padding: 0.5em;
+    border-radius: 0.25em;
+    border: 1px solid #ccc;
+    margin-right: 0.5em;
+}
+
+#search-form button {
+    padding: 0.5em 1em;
+    border-radius: 0.25em;
+    border: none;
+    background-color: gold;
+    color: #fff;
+}
+
+
+        header {
+    background-color: rgb(11, 7, 7);
+    color:gold;
+    display: flex;
+    justify-content: space-between;
+    padding: 1em;
+}
+        nav ul {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        nav ul li {
+            margin-left: 1em;
+        }
+
+        nav ul li:first-child {
+            margin-left: 0;
+        }
+
+        nav a {
+            color: gold;
+            text-decoration: none;
+        }
+
+        main {
+    background-color: rgb(250, 247, 247);
+    padding: 1em;
+}
+
+        h1 {
+            margin-top: 0;
+        }
+
+        h2 {
+    color: rgb(11, 10, 10);
+}
+        #movies {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-evenly;
+        }
+
+        .movie {
+  background-color: #f1fe7f;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(94, 92, 94, 0.3);
+  margin: 1em;
+  overflow: hidden;
+  width: 200px;
+  padding: 0.5em;
+}
+
+        
+
+        .movie img {
+            height: 400px;
+            object-fit: cover;
+            width: 100%;
+        }
+
+        .movie h3 {
+            margin: 0;
+            padding: 1em;
+        }
+
+        .movie p {
+            margin: 0;
+            padding: 1em;
+        }
+        .movie img {
+  width: 200px;
+  height: auto;
+}
+
+    </style>
+</head>
+<body>
+  <header>
+    <h1>Movie Website</h1>
+    <nav>
+        <ul>
+            <li><a href="#" id="movies-link">Movies</a></li>
+            <li><a href="#" id="tv-link">TV Shows</a></li>
+        </ul>
+    </nav>
+</header>
+<main>
+    <div class="welcome-container">
+    
+        
+      </div>
+    <form id="search-form">
+        <label for="search-input">Search movies:</label>
+        <input type="text" id="search-input" placeholder="Enter a movie name...">
+        <button type="submit">Search</button>
+    </form>
+    <section class="background-imag">
+        <h2>Popular Movies and tv Series</h2>
+        <div id="movies"></div>
+    </section>
+
+
+    <script>
+      const API_KEY = 'fa2bdfa864d349ca3c578f216c8e85d4';
+      const API_URL = 'https://api.themoviedb.org/3';
+      const POPULAR_MOVIES_URL = `${API_URL}/movie/popular?include_adult=false&language=en-US&page=1`;
+      const POPULAR_TV_URL = `${API_URL}/tv/popular?include_adult=false&language=en-US&page=1`;
+      const SEARCH_MOVIES_URL = `${API_URL}/search/movie?include_adult=false&language=en-US&page=1`;
+      const SEARCH_TV_URL = `${API_URL}/search/tv?include_adult=false&language=en-US&page=1`;
+  
+      const moviesContainer = document.getElementById('movies');
+      const searchForm = document.getElementById('search-form');
+      const searchInput = document.getElementById('search-input');
+      const moviesLink = document.getElementById('movies-link');
+      const tvLink = document.getElementById('tv-link');
+  
+      async function getMovies(url, container, isTV = false) {
+    const response = await fetch(`${url}&api_key=${API_KEY}`);
+    const data = await response.json();
+    const movies = data.results;
+
+    container.innerHTML = '';
+
+    movies.forEach(movie => {
+        const movieDiv = document.createElement('div');
+        movieDiv.classList.add('movie');
+        movieDiv.innerHTML = `
+            <img src="https://image.tmdb.org/t/p/w500/${movie.poster_path}" alt="${movie.title}">
+            <h3>${movie.title}</h3>
+            <button class="detail-btn">overview</button>
+        `;
+
+        if (isTV) {
+            movieDiv.querySelector('h3').textContent = movie.name;
+            movieDiv.querySelector('img').alt = movie.name;
+        }
+
+        container.appendChild(movieDiv);
+
+        const detailBtn = movieDiv.querySelector('.detail-btn');
+        detailBtn.addEventListener('click', () => {
+            const overview = document.createElement('p');
+            overview.classList.add('overview');
+            overview.textContent = movie.overview || 'No overview available';
+
+            const backBtn = document.createElement('button');
+            backBtn.classList.add('back-btn');
+            backBtn.innerText = 'Back';
+
+            movieDiv.appendChild(overview);
+            movieDiv.appendChild(backBtn);
+
+            detailBtn.remove();
+
+            backBtn.addEventListener('click', () => {
+                overview.remove();
+                backBtn.remove();
+                movieDiv.appendChild(detailBtn);
+            });
+        });
+    });
+}
+searchForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const query = searchInput.value;
+    const searchUrl = `${SEARCH_MOVIES_URL}&query=${query}`;
+    await getMovies(searchUrl, moviesContainer);
+});
+  
+async function getMovies(url, container, isTV = false) {
+    const response = await fetch(`${url}&api_key=${API_KEY}`);
+    const data = await response.json();
+    const movies = data.results;
+
+    container.innerHTML = '';
+
+    movies.forEach(movie => {
+        const movieDiv = document.createElement('div');
+        movieDiv.classList.add('movie');
+        movieDiv.innerHTML = `
+            <img src="https://image.tmdb.org/t/p/w500/${movie.poster_path}" alt="${movie.title}">
+            <h3>${movie.title}</h3>
+            <button class="detail-btn">overview</button>
+            <p class="date">${movie.release_date || movie.first_air_date}</p>
+        `;
+
+        if (isTV) {
+            movieDiv.querySelector('h3').textContent = movie.name;
+            movieDiv.querySelector('img').alt = movie.name;
+        }
+
+        container.appendChild(movieDiv);
+
+        const detailBtn = movieDiv.querySelector('.detail-btn');
+        detailBtn.addEventListener('click', () => {
+            const overview = document.createElement('p');
+            overview.classList.add('overview');
+            overview.textContent = movie.overview || 'No overview available';
+
+            const date = movieDiv.querySelector('.date');
+            date.style.display = 'none';
+
+            const backBtn = document.createElement('button');
+            backBtn.classList.add('back-btn');
+            backBtn.innerText = 'Back';
+
+            movieDiv.appendChild(overview);
+            movieDiv.appendChild(backBtn);
+
+            detailBtn.remove();
+
+            backBtn.addEventListener('click', () => {
+                overview.remove();
+                backBtn.remove();
+                date.style.display = 'block';
+                movieDiv.appendChild(detailBtn);
+            });
+        });
+    });
+}
+     async function getMovies(url, container, isTV = false) {
+    const response = await fetch(`${url}&api_key=${API_KEY}`);
+    const data = await response.json();
+    const movies = data.results;
+
+    container.innerHTML = '';
+
+    movies.forEach(movie => {
+        const movieDiv = document.createElement('div');
+        movieDiv.classList.add('movie');
+        movieDiv.innerHTML = `
+            <img src="https://image.tmdb.org/t/p/w500/${movie.poster_path}" alt="${movie.title}">
+            <h3>${movie.title}</h3>
+            <p>${movie.release_date || movie.first_air_date}</p>
+            <button class="detail-btn">overview</button>
+        `;
+
+        if (isTV) {
+            movieDiv.querySelector('h3').textContent = movie.name;
+            movieDiv.querySelector('img').alt = movie.name;
+        }
+
+        container.appendChild(movieDiv);
+
+        const detailBtn = movieDiv.querySelector('.detail-btn');
+        detailBtn.addEventListener('click', () => {
+            const overview = document.createElement('p');
+            overview.innerHTML = movie.overview;
+            movieDiv.appendChild(overview);
+
+            const backBtn = document.createElement('button');
+            backBtn.classList.add('back-btn');
+            backBtn.innerText = 'Back';
+            movieDiv.appendChild(backBtn);
+
+            detailBtn.remove();
+
+            backBtn.addEventListener('click', () => {
+                overview.remove();
+                backBtn.remove();
+                movieDiv.appendChild(detailBtn);
+            });
+        });
+    });
+}
+const movies= document.getElementById('movies-link');
+const tv  = document.getElementById('tv-link');
+
+moviesLink.addEventListener('click', () => {
+    getMovies(POPULAR_MOVIES_URL, moviesContainer);
+});
+
+tvLink.addEventListener('click', () => {
+    getMovies(POPULAR_TV_URL, moviesContainer, true);
+});
+
+      
+tvLink.addEventListener('click', () => {
+    getMovies(POPULAR_TV_URL, moviesContainer, true);
+});
+      // load popular movies by default
+      getMovies(POPULAR_MOVIES_URL, moviesContainer);
+  </script>
+</body>
+</html>
